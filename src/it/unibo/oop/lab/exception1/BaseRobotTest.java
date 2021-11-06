@@ -1,9 +1,7 @@
 package it.unibo.oop.lab.exception1;
 
 import static org.junit.Assert.assertEquals;
-//import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-//import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
@@ -83,21 +81,28 @@ public final class BaseRobotTest {
          * Repeatedly move the robot up and down until the battery is completely
          * exhausted.
          */
-        while (r2.getBatteryLevel() > 0) {
+        try {
+        	while (r2.getBatteryLevel() > 0) {
+                r2.moveUp();
+                r2.moveDown();
+            }
+            // verify battery level:
+            // expected, actual, delta (accepted error as we deal with decimal
+            // values: in this case we accept NO ERROR, which is generally bad)
+            assertEquals(0d, r2.getBatteryLevel(), 0);
+            // verify position: same as start position
+            assertEquals("[CHECKING ROBOT INIT POS Y]", 0, r2.getEnvironment().getCurrPosY());
+            // out of world: returns false
             r2.moveUp();
-            r2.moveDown();
+            fail();
+            // recharge battery
+            r2.recharge();
+            // verify battery level
+            assertEquals(100, r2.getBatteryLevel(), 0);
+        } catch(NotEnoughBatteryException e) {
+        	System.out.println(e.getMessage());
+        	assertNotNull(e.getMessage());
         }
-        // verify battery level:
-        // expected, actual, delta (accepted error as we deal with decimal
-        // values: in this case we accept NO ERROR, which is generally bad)
-        assertEquals(0d, r2.getBatteryLevel(), 0);
-        // verify position: same as start position
-        assertEquals("[CHECKING ROBOT INIT POS Y]", 0, r2.getEnvironment().getCurrPosY());
-        // out of world: returns false
-        r2.moveUp();
-        // recharge battery
-        r2.recharge();
-        // verify battery level
-        assertEquals(100, r2.getBatteryLevel(), 0);
+        
     }
 }
